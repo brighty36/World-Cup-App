@@ -53,19 +53,19 @@ same array once the bracket is known.
 
 ## Match results, scorers and live updates
 
-Results, status and goal scorers live separately in
-[`src/data/results.json`](src/data/results.json), keyed by fixture `id`. A
-fixture moves to the **Completed** tab once it has an entry there.
+A fixture moves to the **Completed** tab once a result for it is available.
+Scores, status (including in-progress "LIVE"/"HT") and goal scorers are
+fetched directly in the browser from [TheSportsDB](https://www.thesportsdb.com/)
+when the app loads, and merged into the bundled fixture list.
 
-This file is updated by running:
+- Use the **Refresh scores** button on the Completed tab to fetch the latest
+  results on demand (handy during/after a match).
+- Fetched results are cached in local storage, so the last-known scores are
+  still shown offline.
+- `src/data/results.json` is just the initial (empty) fallback used before
+  the first successful fetch.
 
-```bash
-npm run update-results
-```
-
-which fetches the latest scores and goal scorers for the tournament from
-[TheSportsDB](https://www.thesportsdb.com/) and merges them into
-`results.json`. You can also run this from GitHub via the **Update results**
-action (Actions tab → "Update results" → "Run workflow") — it commits and
-pushes any changes, which triggers a redeploy of the site. There's no
-automatic schedule, so run it manually whenever you want the latest scores.
+Team names are matched against TheSportsDB's naming via
+[`src/lib/liveResults.ts`](src/lib/liveResults.ts) — if a fixture's result
+never appears, it's likely a team-name mismatch that needs an alias adding
+there.

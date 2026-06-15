@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { fixtures } from './data/fixtures'
-import { results } from './lib/results'
+import { useLiveResults } from './lib/useLiveResults'
+import { formatRelativeTime } from './lib/relativeTime'
 import { formatDayHeading, getMatchDay, matchDayKey } from './lib/matchday'
 import FixtureCard from './components/FixtureCard'
 import CompletedFixtureCard from './components/CompletedFixtureCard'
@@ -13,16 +14,18 @@ function App() {
   const [group, setGroup] = useState('all')
   const todayRef = useRef<HTMLDivElement>(null)
 
+  const { results, lastUpdated, loading, error, refresh } = useLiveResults()
+
   const todayKey = matchDayKey(new Date().toISOString())
 
-  const upcomingFixtures = useMemo(() => fixtures.filter((f) => !results[f.id]), [])
+  const upcomingFixtures = useMemo(() => fixtures.filter((f) => !results[f.id]), [results])
 
   const completedFixtures = useMemo(
     () =>
       fixtures
         .filter((f) => results[f.id])
         .sort((a, b) => new Date(b.utcKickoff).getTime() - new Date(a.utcKickoff).getTime()),
-    [],
+    [results],
   )
 
   const days = useMemo(() => {
@@ -114,6 +117,27 @@ function App() {
               className="rounded-lg px-3 py-2 text-sm font-medium bg-emerald-400 text-emerald-950 hover:bg-emerald-300 transition-colors"
             >
               Today
+            </button>
+          </div>
+        )}
+
+        {tab === 'completed' && (
+          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+            <span className="flex-1 text-xs text-emerald-300">
+              {loading
+                ? 'Updating scores…'
+                : error
+                  ? error
+                  : lastUpdated
+                    ? `Scores updated ${formatRelativeTime(lastUpdated)}`
+                    : 'Scores not yet updated'}
+            </span>
+            <button
+              onClick={refresh}
+              disabled={loading}
+              className="shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium bg-emerald-400 text-emerald-950 hover:bg-emerald-300 transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Updating…' : 'Refresh'}
             </button>
           </div>
         )}
