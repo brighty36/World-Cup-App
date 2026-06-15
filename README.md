@@ -5,13 +5,23 @@ phone's home screen for a quick fixture list.
 
 ## Features
 
-- All group-stage fixtures in chronological order, grouped by day.
-- **Days run 4am to 4am (UK time)**, so a match kicking off at, say, 2am on
-  Sunday is shown under Saturday night (marked with a 🌙 and the actual day).
-- Each fixture shows the UK kickoff time, group, venue/city, and the UK TV
-  channel (BBC/ITV).
-- Search by team, venue or city, and filter by group.
-- "Today" button jumps to the current match day.
+- Two tabs: **Upcoming** and **Completed**.
+- **Upcoming** shows all group-stage fixtures still to be played, in
+  chronological order, grouped by day.
+  - **Days run 4am to 4am (UK time)**, so a match kicking off at, say, 2am on
+    Sunday is shown under Saturday night (marked with a 🌙 and the actual day).
+  - Each fixture shows the UK kickoff time, group, venue/city, and the UK TV
+    channel (BBC/ITV).
+  - Search by team, venue or city, and filter by group.
+  - "Today" button jumps to the current match day.
+- **Completed** shows finished matches with their final score, most recent
+  first. For each match you can:
+  - Check off how you watched it (full 90 mins / extended highlights / short
+    highlights).
+  - Open a BBC Sport search for the match report.
+  - Jot down your own notes.
+  - This diary data (watched status + notes) is saved in your browser's
+    local storage, so it stays on your device only.
 - Installable as a PWA (works offline once loaded).
 
 ## Running locally
@@ -42,3 +52,8 @@ should also be double-checked.
 Knockout-stage fixtures (Round of 32 onwards) aren't included yet since the
 teams aren't determined during the group stage — they can be added to the
 same array once the bracket is known.
+
+A fixture moves to the **Completed** tab once it has a `result: { home, away }`
+field. A handful of early matches currently have placeholder scores for
+testing the diary feature — replace these with the real final scores as
+matches are played.
