@@ -1,17 +1,5 @@
-// Fetches 2026 FIFA World Cup results from TheSportsDB's free API and writes
-// src/data/results.json. Run manually via:
-//
-//   node scripts/update-results.mjs
-//
-// or via the "Update results" GitHub Action (workflow_dispatch).
-
-import { readFileSync, writeFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const FIXTURES_PATH = path.join(__dirname, '../src/data/fixtures.json')
-const RESULTS_PATH = path.join(__dirname, '../src/data/results.json')
+import fixturesData from '../data/fixtures.json'
+import type { ResultsMap } from './results'
 
 // TheSportsDB free API key "3" (no signup required).
 const API_BASE = 'https://www.thesportsdb.com/api/v1/json/3'
@@ -26,7 +14,7 @@ const FINISHED_STATUSES = new Set(['Match Finished', 'FT', 'AOT', 'AET'])
 
 // Maps differing team-name spellings (TheSportsDB vs our fixtures.json) to a
 // shared canonical form so fixtures can be matched to events.
-const TEAM_ALIASES = {
+const TEAM_ALIASES: Record<string, string> = {
   'south korea': 'korea republic',
   'korea republic': 'korea republic',
   czechia: 'czech republic',
@@ -48,7 +36,7 @@ const TEAM_ALIASES = {
   curacao: 'curacao',
 }
 
-function canonicalTeam(name) {
+function canonicalTeam(name: string): string {
   const normalized = name
     .toLowerCase()
     .trim()
@@ -60,7 +48,7 @@ function canonicalTeam(name) {
 }
 
 // "Player Name:45';Player Name:90+2'" -> ["Player Name", "Player Name"]
-function parseScorers(goalDetails) {
+function parseScorers(goalDetails?: string | null): string[] {
   if (!goalDetails) return []
   return goalDetails
     .split(';')
@@ -73,7 +61,18 @@ function parseScorers(goalDetails) {
     .filter(Boolean)
 }
 
-async function fetchSeasonEvents() {
+interface SportsDbEvent {
+  idEvent: string
+  strHomeTeam: string
+  strAwayTeam: string
+  intHomeScore: string | null
+  intAwayScore: string | null
+  strStatus: string
+  strHomeGoalDetails?: string | null
+  strAwayGoalDetails?: string | null
+}
+
+async function fetchSeasonEvents(): Promise<SportsDbEvent[]> {
   for (const season of SEASONS_TO_TRY) {
     const url = `${API_BASE}/eventsseason.php?id=${LEAGUE_ID}&s=${season}`
     const res = await fetch(url)
@@ -84,7 +83,7 @@ async function fetchSeasonEvents() {
   return []
 }
 
-async function fetchEventDetails(eventId) {
+async function fetchEventDetails(eventId: string): Promise<SportsDbEvent | null> {
   const url = `${API_BASE}/lookupevent.php?id=${eventId}`
   const res = await fetch(url)
   if (!res.ok) return null
@@ -92,37 +91,26 @@ async function fetchEventDetails(eventId) {
   return data?.events?.[0] ?? null
 }
 
-async function main() {
-  const fixtures = JSON.parse(readFileSync(FIXTURES_PATH, 'utf-8'))
-  const results = JSON.parse(readFileSync(RESULTS_PATH, 'utf-8'))
-
+/** Fetches current scores, status and scorers for our fixtures from TheSportsDB. */
+export async function fetchLiveResults(): Promise<ResultsMap> {
   const events = await fetchSeasonEvents()
-  if (events.length === 0) {
-    console.warn('No events returned from TheSportsDB - leaving results.json unchanged.')
-    return
-  }
+  if (events.length === 0) return {}
 
-  const eventsByTeamPair = new Map()
+  const eventsByTeamPair = new Map<string, SportsDbEvent>()
   for (const event of events) {
     const home = canonicalTeam(event.strHomeTeam ?? '')
     const away = canonicalTeam(event.strAwayTeam ?? '')
     eventsByTeamPair.set([home, away].sort().join('|'), event)
   }
 
-  let updated = 0
-  for (const fixture of fixtures) {
+  const results: ResultsMap = {}
+
+  for (const fixture of fixturesData) {
     const home = canonicalTeam(fixture.homeTeam)
     const away = canonicalTeam(fixture.awayTeam)
     const event = eventsByTeamPair.get([home, away].sort().join('|'))
-
-    if (!event) {
-      console.warn(`No matching TheSportsDB event for ${fixture.id}: ${fixture.homeTeam} v ${fixture.awayTeam}`)
-      continue
-    }
-
-    if (NOT_STARTED_STATUSES.has(event.strStatus ?? '') || event.intHomeScore === null) {
-      continue
-    }
+    if (!event) continue
+    if (NOT_STARTED_STATUSES.has(event.strStatus ?? '') || event.intHomeScore === null) continue
 
     const homeScore = Number(event.intHomeScore)
     const awayScore = Number(event.intAwayScore)
@@ -156,11 +144,7 @@ async function main() {
     }
 
     results[fixture.id] = { home: resultHome, away: resultAway, status, scorers }
-    updated += 1
   }
 
-  writeFileSync(RESULTS_PATH, JSON.stringify(results, null, 2) + '\n')
-  console.log(`Updated ${updated} fixture result(s).`)
+  return results
 }
-
-main()
