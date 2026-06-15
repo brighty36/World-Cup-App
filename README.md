@@ -41,13 +41,11 @@ All fixture data lives in [`src/data/fixtures.ts`](src/data/fixtures.ts) as a
 plain array — each match has a date/time (`utcKickoff`, stored in UTC),
 group, teams, venue, city, country and UK `channel`.
 
-This data was compiled from publicly reported schedules as of 15 June 2026.
-Entries marked `channel: 'TBC'` are not yet confirmed — cross-check the
-official FIFA fixture list and the BBC/ITV TV guide
-(e.g. the [Metro World Cup 2026 TV schedule](https://metro.co.uk/2026/06/11/watch-world-cup-2026-tv-full-bbc-itv-channel-schedule-28255205/))
-and edit the `channel` field for each match as it's confirmed. Venues for a
-few later group games were inferred from each group's venue cluster and
-should also be double-checked.
+This data was compiled from publicly reported schedules as of 15 June 2026,
+including the UK TV channel (BBC One/Two or ITV1/ITV4, plus STV for
+Scotland's games) for every group-stage match. Venues for a few later group
+games were inferred from each group's venue cluster and should be
+double-checked against the official FIFA fixture list.
 
 Knockout-stage fixtures (Round of 32 onwards) aren't included yet since the
 teams aren't determined during the group stage — they can be added to the
