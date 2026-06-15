@@ -145,9 +145,9 @@ function App() {
             ))}
 
             <p className="px-4 pt-6 text-xs text-gray-400 dark:text-gray-600">
-              Fixture details (especially venues and UK channel allocations marked "TBC") are
-              compiled from public schedules and may change &mdash; double-check against the
-              official FIFA fixture list and BBC/ITV listings nearer the time.
+              Fixture details (especially venues) are compiled from public schedules and may
+              change &mdash; double-check against the official FIFA fixture list and BBC/ITV
+              listings nearer the time.
             </p>
           </>
         ) : (
