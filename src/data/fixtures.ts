@@ -11,6 +11,11 @@ export interface Fixture {
   country: string
   /** UK broadcaster, or 'TBC' where not yet confirmed. */
   channel: string
+  /**
+   * Final score, once the match has been played - presence of this field
+   * marks a fixture as "completed" for the diary feature.
+   */
+  result?: { home: number; away: number }
 }
 
 // 2026 FIFA World Cup - group stage fixtures (Canada / Mexico / USA).
@@ -19,50 +24,53 @@ export interface Fixture {
 // 15 June 2026 - double check exact venues and UK channel allocations
 // (especially matches marked 'TBC') against the official FIFA fixture list
 // and the BBC/ITV TV guide, and adjust this file as needed.
+// Final scores below for already-played matches are placeholders for
+// testing the diary feature - replace with the actual final scores once
+// each match has been played.
 export const fixtures: Fixture[] = [
   // Group A - Mexico, South Korea, South Africa, Czechia
-  { id: 'A1', utcKickoff: '2026-06-11T18:00:00Z', group: 'A', round: 'Group Stage', homeTeam: 'Mexico', awayTeam: 'South Africa', venue: 'Estadio Azteca', city: 'Mexico City', country: 'Mexico', channel: 'ITV1' },
-  { id: 'A2', utcKickoff: '2026-06-11T20:00:00Z', group: 'A', round: 'Group Stage', homeTeam: 'South Korea', awayTeam: 'Czechia', venue: 'Estadio Akron', city: 'Guadalajara', country: 'Mexico', channel: 'TBC' },
+  { id: 'A1', utcKickoff: '2026-06-11T18:00:00Z', group: 'A', round: 'Group Stage', homeTeam: 'Mexico', awayTeam: 'South Africa', venue: 'Estadio Azteca', city: 'Mexico City', country: 'Mexico', channel: 'ITV1', result: { home: 2, away: 0 } },
+  { id: 'A2', utcKickoff: '2026-06-11T20:00:00Z', group: 'A', round: 'Group Stage', homeTeam: 'South Korea', awayTeam: 'Czechia', venue: 'Estadio Akron', city: 'Guadalajara', country: 'Mexico', channel: 'TBC', result: { home: 1, away: 1 } },
   { id: 'A3', utcKickoff: '2026-06-18T16:00:00Z', group: 'A', round: 'Group Stage', homeTeam: 'Czechia', awayTeam: 'South Africa', venue: 'Mercedes-Benz Stadium', city: 'Atlanta', country: 'USA', channel: 'TBC' },
   { id: 'A4', utcKickoff: '2026-06-19T03:00:00Z', group: 'A', round: 'Group Stage', homeTeam: 'Mexico', awayTeam: 'South Korea', venue: 'Estadio Akron', city: 'Guadalajara', country: 'Mexico', channel: 'TBC' },
   { id: 'A5', utcKickoff: '2026-06-25T01:00:00Z', group: 'A', round: 'Group Stage', homeTeam: 'Czechia', awayTeam: 'Mexico', venue: 'Mercedes-Benz Stadium', city: 'Atlanta', country: 'USA', channel: 'TBC' },
   { id: 'A6', utcKickoff: '2026-06-25T01:00:00Z', group: 'A', round: 'Group Stage', homeTeam: 'South Africa', awayTeam: 'South Korea', venue: 'Estadio Akron', city: 'Guadalajara', country: 'Mexico', channel: 'TBC' },
 
   // Group B - Canada, Switzerland, Qatar, Bosnia and Herzegovina
-  { id: 'B1', utcKickoff: '2026-06-12T20:00:00Z', group: 'B', round: 'Group Stage', homeTeam: 'Canada', awayTeam: 'Bosnia and Herzegovina', venue: 'BMO Field', city: 'Toronto', country: 'Canada', channel: 'TBC' },
-  { id: 'B2', utcKickoff: '2026-06-13T17:00:00Z', group: 'B', round: 'Group Stage', homeTeam: 'Qatar', awayTeam: 'Switzerland', venue: 'SoFi Stadium', city: 'Los Angeles', country: 'USA', channel: 'TBC' },
+  { id: 'B1', utcKickoff: '2026-06-12T20:00:00Z', group: 'B', round: 'Group Stage', homeTeam: 'Canada', awayTeam: 'Bosnia and Herzegovina', venue: 'BMO Field', city: 'Toronto', country: 'Canada', channel: 'TBC', result: { home: 2, away: 1 } },
+  { id: 'B2', utcKickoff: '2026-06-13T17:00:00Z', group: 'B', round: 'Group Stage', homeTeam: 'Qatar', awayTeam: 'Switzerland', venue: 'SoFi Stadium', city: 'Los Angeles', country: 'USA', channel: 'TBC', result: { home: 0, away: 2 } },
   { id: 'B3', utcKickoff: '2026-06-18T19:00:00Z', group: 'B', round: 'Group Stage', homeTeam: 'Switzerland', awayTeam: 'Bosnia and Herzegovina', venue: 'SoFi Stadium', city: 'Los Angeles', country: 'USA', channel: 'TBC' },
   { id: 'B4', utcKickoff: '2026-06-18T22:00:00Z', group: 'B', round: 'Group Stage', homeTeam: 'Canada', awayTeam: 'Qatar', venue: 'BC Place', city: 'Vancouver', country: 'Canada', channel: 'TBC' },
   { id: 'B5', utcKickoff: '2026-06-24T19:00:00Z', group: 'B', round: 'Group Stage', homeTeam: 'Switzerland', awayTeam: 'Canada', venue: 'BC Place', city: 'Vancouver', country: 'Canada', channel: 'TBC' },
   { id: 'B6', utcKickoff: '2026-06-24T19:00:00Z', group: 'B', round: 'Group Stage', homeTeam: 'Bosnia and Herzegovina', awayTeam: 'Qatar', venue: 'SoFi Stadium', city: 'Los Angeles', country: 'USA', channel: 'TBC' },
 
   // Group C - Brazil, Morocco, Scotland, Haiti
-  { id: 'C1', utcKickoff: '2026-06-13T20:00:00Z', group: 'C', round: 'Group Stage', homeTeam: 'Brazil', awayTeam: 'Morocco', venue: 'Hard Rock Stadium', city: 'Miami', country: 'USA', channel: 'TBC' },
-  { id: 'C2', utcKickoff: '2026-06-13T17:00:00Z', group: 'C', round: 'Group Stage', homeTeam: 'Scotland', awayTeam: 'Haiti', venue: 'Lincoln Financial Field', city: 'Philadelphia', country: 'USA', channel: 'BBC One' },
+  { id: 'C1', utcKickoff: '2026-06-13T20:00:00Z', group: 'C', round: 'Group Stage', homeTeam: 'Brazil', awayTeam: 'Morocco', venue: 'Hard Rock Stadium', city: 'Miami', country: 'USA', channel: 'TBC', result: { home: 2, away: 1 } },
+  { id: 'C2', utcKickoff: '2026-06-13T17:00:00Z', group: 'C', round: 'Group Stage', homeTeam: 'Scotland', awayTeam: 'Haiti', venue: 'Lincoln Financial Field', city: 'Philadelphia', country: 'USA', channel: 'BBC One', result: { home: 3, away: 0 } },
   { id: 'C3', utcKickoff: '2026-06-19T22:00:00Z', group: 'C', round: 'Group Stage', homeTeam: 'Scotland', awayTeam: 'Morocco', venue: 'Hard Rock Stadium', city: 'Miami', country: 'USA', channel: 'ITV1 / STV' },
   { id: 'C4', utcKickoff: '2026-06-20T01:00:00Z', group: 'C', round: 'Group Stage', homeTeam: 'Brazil', awayTeam: 'Haiti', venue: 'Lincoln Financial Field', city: 'Philadelphia', country: 'USA', channel: 'TBC' },
   { id: 'C5', utcKickoff: '2026-06-24T22:00:00Z', group: 'C', round: 'Group Stage', homeTeam: 'Scotland', awayTeam: 'Brazil', venue: 'Hard Rock Stadium', city: 'Miami', country: 'USA', channel: 'BBC One' },
   { id: 'C6', utcKickoff: '2026-06-24T22:00:00Z', group: 'C', round: 'Group Stage', homeTeam: 'Morocco', awayTeam: 'Haiti', venue: 'Mercedes-Benz Stadium', city: 'Atlanta', country: 'USA', channel: 'TBC' },
 
   // Group D - USA, Australia, Paraguay, Turkiye
-  { id: 'D1', utcKickoff: '2026-06-12T20:00:00Z', group: 'D', round: 'Group Stage', homeTeam: 'USA', awayTeam: 'Paraguay', venue: 'SoFi Stadium', city: 'Los Angeles', country: 'USA', channel: 'TBC' },
-  { id: 'D2', utcKickoff: '2026-06-14T17:00:00Z', group: 'D', round: 'Group Stage', homeTeam: 'Australia', awayTeam: 'Turkiye', venue: "Levi's Stadium", city: 'San Francisco', country: 'USA', channel: 'TBC' },
+  { id: 'D1', utcKickoff: '2026-06-12T20:00:00Z', group: 'D', round: 'Group Stage', homeTeam: 'USA', awayTeam: 'Paraguay', venue: 'SoFi Stadium', city: 'Los Angeles', country: 'USA', channel: 'TBC', result: { home: 1, away: 0 } },
+  { id: 'D2', utcKickoff: '2026-06-14T17:00:00Z', group: 'D', round: 'Group Stage', homeTeam: 'Australia', awayTeam: 'Turkiye', venue: "Levi's Stadium", city: 'San Francisco', country: 'USA', channel: 'TBC', result: { home: 1, away: 2 } },
   { id: 'D3', utcKickoff: '2026-06-19T19:00:00Z', group: 'D', round: 'Group Stage', homeTeam: 'USA', awayTeam: 'Australia', venue: "Levi's Stadium", city: 'San Francisco', country: 'USA', channel: 'TBC' },
   { id: 'D4', utcKickoff: '2026-06-20T04:00:00Z', group: 'D', round: 'Group Stage', homeTeam: 'Turkiye', awayTeam: 'Paraguay', venue: 'AT&T Stadium', city: 'Dallas', country: 'USA', channel: 'TBC' },
   { id: 'D5', utcKickoff: '2026-06-26T02:00:00Z', group: 'D', round: 'Group Stage', homeTeam: 'Turkiye', awayTeam: 'USA', venue: "Levi's Stadium", city: 'San Francisco', country: 'USA', channel: 'TBC' },
   { id: 'D6', utcKickoff: '2026-06-26T02:00:00Z', group: 'D', round: 'Group Stage', homeTeam: 'Paraguay', awayTeam: 'Australia', venue: 'AT&T Stadium', city: 'Dallas', country: 'USA', channel: 'TBC' },
 
   // Group E - Germany, Ecuador, Ivory Coast, Curacao
-  { id: 'E1', utcKickoff: '2026-06-14T20:00:00Z', group: 'E', round: 'Group Stage', homeTeam: 'Germany', awayTeam: 'Curacao', venue: 'Lincoln Financial Field', city: 'Philadelphia', country: 'USA', channel: 'TBC' },
-  { id: 'E2', utcKickoff: '2026-06-14T17:00:00Z', group: 'E', round: 'Group Stage', homeTeam: 'Ivory Coast', awayTeam: 'Ecuador', venue: 'NRG Stadium', city: 'Houston', country: 'USA', channel: 'TBC' },
+  { id: 'E1', utcKickoff: '2026-06-14T20:00:00Z', group: 'E', round: 'Group Stage', homeTeam: 'Germany', awayTeam: 'Curacao', venue: 'Lincoln Financial Field', city: 'Philadelphia', country: 'USA', channel: 'TBC', result: { home: 4, away: 0 } },
+  { id: 'E2', utcKickoff: '2026-06-14T17:00:00Z', group: 'E', round: 'Group Stage', homeTeam: 'Ivory Coast', awayTeam: 'Ecuador', venue: 'NRG Stadium', city: 'Houston', country: 'USA', channel: 'TBC', result: { home: 1, away: 1 } },
   { id: 'E3', utcKickoff: '2026-06-20T20:00:00Z', group: 'E', round: 'Group Stage', homeTeam: 'Germany', awayTeam: 'Ivory Coast', venue: 'Lincoln Financial Field', city: 'Philadelphia', country: 'USA', channel: 'TBC' },
   { id: 'E4', utcKickoff: '2026-06-21T00:00:00Z', group: 'E', round: 'Group Stage', homeTeam: 'Ecuador', awayTeam: 'Curacao', venue: 'NRG Stadium', city: 'Houston', country: 'USA', channel: 'TBC' },
   { id: 'E5', utcKickoff: '2026-06-25T20:00:00Z', group: 'E', round: 'Group Stage', homeTeam: 'Ecuador', awayTeam: 'Germany', venue: 'MetLife Stadium', city: 'New York/New Jersey', country: 'USA', channel: 'TBC' },
   { id: 'E6', utcKickoff: '2026-06-25T20:00:00Z', group: 'E', round: 'Group Stage', homeTeam: 'Curacao', awayTeam: 'Ivory Coast', venue: 'Lincoln Financial Field', city: 'Philadelphia', country: 'USA', channel: 'TBC' },
 
   // Group F - Netherlands, Japan, Tunisia, Sweden
-  { id: 'F1', utcKickoff: '2026-06-14T20:00:00Z', group: 'F', round: 'Group Stage', homeTeam: 'Netherlands', awayTeam: 'Japan', venue: 'AT&T Stadium', city: 'Dallas', country: 'USA', channel: 'TBC' },
-  { id: 'F2', utcKickoff: '2026-06-14T17:00:00Z', group: 'F', round: 'Group Stage', homeTeam: 'Sweden', awayTeam: 'Tunisia', venue: 'Arrowhead Stadium', city: 'Kansas City', country: 'USA', channel: 'TBC' },
+  { id: 'F1', utcKickoff: '2026-06-14T20:00:00Z', group: 'F', round: 'Group Stage', homeTeam: 'Netherlands', awayTeam: 'Japan', venue: 'AT&T Stadium', city: 'Dallas', country: 'USA', channel: 'TBC', result: { home: 2, away: 1 } },
+  { id: 'F2', utcKickoff: '2026-06-14T17:00:00Z', group: 'F', round: 'Group Stage', homeTeam: 'Sweden', awayTeam: 'Tunisia', venue: 'Arrowhead Stadium', city: 'Kansas City', country: 'USA', channel: 'TBC', result: { home: 1, away: 0 } },
   { id: 'F3', utcKickoff: '2026-06-20T17:00:00Z', group: 'F', round: 'Group Stage', homeTeam: 'Netherlands', awayTeam: 'Sweden', venue: 'AT&T Stadium', city: 'Dallas', country: 'USA', channel: 'TBC' },
   { id: 'F4', utcKickoff: '2026-06-21T04:00:00Z', group: 'F', round: 'Group Stage', homeTeam: 'Tunisia', awayTeam: 'Japan', venue: 'Arrowhead Stadium', city: 'Kansas City', country: 'USA', channel: 'TBC' },
   { id: 'F5', utcKickoff: '2026-06-25T23:00:00Z', group: 'F', round: 'Group Stage', homeTeam: 'Japan', awayTeam: 'Sweden', venue: 'AT&T Stadium', city: 'Dallas', country: 'USA', channel: 'TBC' },
