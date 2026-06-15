@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { fixtures } from './data/fixtures'
+import { results } from './lib/results'
 import { formatDayHeading, getMatchDay, matchDayKey } from './lib/matchday'
 import FixtureCard from './components/FixtureCard'
 import CompletedFixtureCard from './components/CompletedFixtureCard'
@@ -14,12 +15,12 @@ function App() {
 
   const todayKey = matchDayKey(new Date().toISOString())
 
-  const upcomingFixtures = useMemo(() => fixtures.filter((f) => !f.result), [])
+  const upcomingFixtures = useMemo(() => fixtures.filter((f) => !results[f.id]), [])
 
   const completedFixtures = useMemo(
     () =>
       fixtures
-        .filter((f) => f.result)
+        .filter((f) => results[f.id])
         .sort((a, b) => new Date(b.utcKickoff).getTime() - new Date(a.utcKickoff).getTime()),
     [],
   )
@@ -157,7 +158,7 @@ function App() {
             ) : (
               <ul className="bg-white dark:bg-gray-900">
                 {completedFixtures.map((fixture) => (
-                  <CompletedFixtureCard key={fixture.id} fixture={fixture} />
+                  <CompletedFixtureCard key={fixture.id} fixture={fixture} result={results[fixture.id]} />
                 ))}
               </ul>
             )}

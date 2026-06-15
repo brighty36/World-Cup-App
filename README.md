@@ -14,8 +14,8 @@ phone's home screen for a quick fixture list.
     channel (BBC/ITV).
   - Search by team, venue or city, and filter by group.
   - "Today" button jumps to the current match day.
-- **Completed** shows finished matches with their final score, most recent
-  first. For each match you can:
+- **Completed** shows finished (and in-progress) matches with their score and
+  goal scorers, most recent first. For each match you can:
   - Check off how you watched it (full 90 mins / extended highlights / short
     highlights).
   - Open a BBC Sport search for the match report.
@@ -37,8 +37,8 @@ phone's browser and use "Add to Home Screen".
 
 ## Updating fixture data
 
-All fixture data lives in [`src/data/fixtures.ts`](src/data/fixtures.ts) as a
-plain array — each match has a date/time (`utcKickoff`, stored in UTC),
+All fixture data lives in [`src/data/fixtures.json`](src/data/fixtures.json)
+as a plain array — each match has a date/time (`utcKickoff`, stored in UTC),
 group, teams, venue, city, country and UK `channel`.
 
 This data was compiled from publicly reported schedules as of 15 June 2026,
@@ -51,7 +51,21 @@ Knockout-stage fixtures (Round of 32 onwards) aren't included yet since the
 teams aren't determined during the group stage — they can be added to the
 same array once the bracket is known.
 
-A fixture moves to the **Completed** tab once it has a `result: { home, away }`
-field. A handful of early matches currently have placeholder scores for
-testing the diary feature — replace these with the real final scores as
-matches are played.
+## Match results, scorers and live updates
+
+Results, status and goal scorers live separately in
+[`src/data/results.json`](src/data/results.json), keyed by fixture `id`. A
+fixture moves to the **Completed** tab once it has an entry there.
+
+This file is updated by running:
+
+```bash
+npm run update-results
+```
+
+which fetches the latest scores and goal scorers for the tournament from
+[TheSportsDB](https://www.thesportsdb.com/) and merges them into
+`results.json`. You can also run this from GitHub via the **Update results**
+action (Actions tab → "Update results" → "Run workflow") — it commits and
+pushes any changes, which triggers a redeploy of the site. There's no
+automatic schedule, so run it manually whenever you want the latest scores.
