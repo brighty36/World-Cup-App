@@ -2,6 +2,7 @@ import { useId } from 'react'
 import type { Fixture } from '../data/fixtures'
 import { getFlag } from '../data/flags'
 import { useDiaryEntry, type WatchedStatus } from '../lib/diary'
+import type { MatchResult } from '../lib/results'
 
 const WATCH_OPTIONS: { value: WatchedStatus; label: string }[] = [
   { value: 'full', label: 'Full 90 mins' },
@@ -14,7 +15,15 @@ function bbcMatchReportUrl(fixture: Fixture): string {
   return `https://www.bbc.co.uk/search?q=${encodeURIComponent(query)}&d=news_gnl`
 }
 
-export default function CompletedFixtureCard({ fixture }: { fixture: Fixture }) {
+const LIVE_STATUSES = new Set(['LIVE', '1H', '2H', 'HT', 'ET', 'PEN', 'BT'])
+
+export default function CompletedFixtureCard({
+  fixture,
+  result,
+}: {
+  fixture: Fixture
+  result: MatchResult
+}) {
   const [entry, updateEntry] = useDiaryEntry(fixture.id)
   const radioName = useId()
 
@@ -25,24 +34,55 @@ export default function CompletedFixtureCard({ fixture }: { fixture: Fixture }) 
     timeZone: 'Europe/London',
   })
 
+  const isLive = !!result.status && LIVE_STATUSES.has(result.status)
+  const homeScorers = result.scorers?.home ?? []
+  const awayScorers = result.scorers?.away ?? []
+
   return (
     <li className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
       <div className="flex items-center justify-between gap-2 mb-1.5">
         <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{dateLabel}</span>
-        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
-          Group {fixture.group}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {isLive && (
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-600 text-white animate-pulse">
+              {result.status === 'HT' ? 'HT' : 'LIVE'}
+            </span>
+          )}
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+            Group {fixture.group}
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-100">
         <span className="text-xl leading-none shrink-0">{getFlag(fixture.homeTeam)}</span>
         <span className="flex-1 text-right">{fixture.homeTeam}</span>
         <span className="text-lg font-bold tabular-nums shrink-0 px-2">
-          {fixture.result?.home} - {fixture.result?.away}
+          {result.home} - {result.away}
         </span>
         <span className="flex-1 text-left">{fixture.awayTeam}</span>
         <span className="text-xl leading-none shrink-0">{getFlag(fixture.awayTeam)}</span>
       </div>
+
+      {(homeScorers.length > 0 || awayScorers.length > 0) && (
+        <div className="flex items-start gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <span className="flex-1 text-right">
+            {homeScorers.map((scorer, i) => (
+              <span key={i} className="block">
+                {scorer} ⚽
+              </span>
+            ))}
+          </span>
+          <span className="shrink-0 px-2" />
+          <span className="flex-1 text-left">
+            {awayScorers.map((scorer, i) => (
+              <span key={i} className="block">
+                ⚽ {scorer}
+              </span>
+            ))}
+          </span>
+        </div>
+      )}
 
       <div className="text-sm text-gray-500 dark:text-gray-400 text-center mt-1">
         {fixture.venue}, {fixture.city}
