@@ -72,10 +72,19 @@ interface SportsDbEvent {
   strAwayGoalDetails?: string | null
 }
 
+// Force a fresh network response on every call. Without this the browser (or a
+// CDN in front of TheSportsDB) serves the previously cached response, so the
+// Refresh button re-applies identical, stale scores. `cache: 'no-store'` skips
+// the browser HTTP cache; the unique `_` param defeats any URL-keyed CDN cache.
+async function fetchFresh(url: string): Promise<Response> {
+  const separator = url.includes('?') ? '&' : '?'
+  return fetch(`${url}${separator}_=${Date.now()}`, { cache: 'no-store' })
+}
+
 async function fetchSeasonEvents(): Promise<SportsDbEvent[]> {
   for (const season of SEASONS_TO_TRY) {
     const url = `${API_BASE}/eventsseason.php?id=${LEAGUE_ID}&s=${season}`
-    const res = await fetch(url)
+    const res = await fetchFresh(url)
     if (!res.ok) continue
     const data = await res.json()
     if (data?.events?.length) return data.events
@@ -85,7 +94,7 @@ async function fetchSeasonEvents(): Promise<SportsDbEvent[]> {
 
 async function fetchEventDetails(eventId: string): Promise<SportsDbEvent | null> {
   const url = `${API_BASE}/lookupevent.php?id=${eventId}`
-  const res = await fetch(url)
+  const res = await fetchFresh(url)
   if (!res.ok) return null
   const data = await res.json()
   return data?.events?.[0] ?? null

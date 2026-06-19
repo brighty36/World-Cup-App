@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { results as fallbackResults, type ResultsMap } from './results'
 import { fetchLiveResults } from './liveResults'
 
@@ -30,22 +30,37 @@ export function useLiveResults() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Mirror the latest results in a ref so the stable fetch callback can tell
+  // whether scores are already on screen without being recreated on every change.
+  const resultsRef = useRef(results)
+  useEffect(() => {
+    resultsRef.current = results
+  }, [results])
+
   const fetchAndApply = useCallback(async () => {
     try {
       const live = await fetchLiveResults()
-      if (Object.keys(live).length === 0) {
+      const haveExisting = Object.keys(resultsRef.current).length > 0
+      if (Object.keys(live).length === 0 && !haveExisting) {
+        // Reached the service but there are genuinely no results to show yet.
         setError('No live results available yet')
         return
       }
-      setResults((prev) => {
-        const merged = { ...prev, ...live }
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify(merged))
-        } catch {
-          // localStorage unavailable - merged results still held in state
-        }
-        return merged
-      })
+      if (Object.keys(live).length > 0) {
+        setResults((prev) => {
+          const merged = { ...prev, ...live }
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(merged))
+          } catch {
+            // localStorage unavailable - merged results still held in state
+          }
+          return merged
+        })
+      }
+      // The fetch resolved, so we reached the service. Stamp the time (and clear
+      // any prior error) so a refresh is visibly confirmed even when no newer
+      // scores came back, rather than looking like it did nothing.
+      setError(null)
       const now = new Date()
       setLastUpdated(now)
       try {
