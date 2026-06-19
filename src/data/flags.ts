@@ -55,6 +55,23 @@ const SPECIAL: Record<string, string> = {
   Scotland: '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
 }
 
+// flagcdn.com subdivision codes for entries without an ISO alpha-2 flag.
+const FLAGCDN_SPECIAL: Record<string, string> = {
+  England: 'gb-eng',
+  Scotland: 'gb-sct',
+}
+
+/**
+ * Returns the lowercase flagcdn.com flag code for a team (e.g. "br", "gb-sct"),
+ * or null if we have no mapping. Used to render crisp SVG flag images, which we
+ * fall back to emoji for when offline or unmapped.
+ */
+export function getFlagCode(team: string): string | null {
+  if (FLAGCDN_SPECIAL[team]) return FLAGCDN_SPECIAL[team]
+  const code = ALPHA2[team]
+  return code ? code.toLowerCase() : null
+}
+
 function alpha2ToFlag(code: string): string {
   const codePoints = code
     .toUpperCase()
